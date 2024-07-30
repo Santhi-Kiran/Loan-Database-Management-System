@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/Welcome/Downloads/Database final project/Final_Project.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="125"/><column_width id="3" width="4055"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,12:mainLoan_Officer"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="Branch" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="102"/><column index="2" value="130"/><column index="3" value="155"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Customer" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="124"/><column index="2" value="152"/><column index="3" value="202"/><column index="4" value="172"/><column index="5" value="134"/><column index="6" value="149"/><column index="7" value="165"/><column index="8" value="221"/><column index="9" value="163"/><column index="10" value="177"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Loan_Information" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="84"/><column index="2" value="104"/><column index="3" value="131"/><column index="4" value="209"/><column index="5" value="158"/><column index="6" value="143"/><column index="7" value="149"/><column index="8" value="124"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Loan_Officer" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="100"/><column index="2" value="128"/><column index="3" value="182"/><column index="4" value="174"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Loan_Repayment_Info" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="142"/><column index="2" value="161"/><column index="3" value="189"/><column index="4" value="191"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Loan_Transaction_Information" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="142"/><column index="2" value="161"/><column index="3" value="189"/><column index="4" value="191"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">
+
+/* Total Loans availed by customers in Bank Ordered by branch */ 
+SELECT  c.Branch_Name,c.Branch_ID,a.Customer_Name,a.Customer_ID, b.Loan_Type,b.Loan_Amount
+FROM Customer as a
+JOIN Loan_Information as b
+ON	a.Customer_ID = b.ID_Customer
+JOIN Branch as c
+ON c.Branch_ID = a.Customer_Branch
+ORDER by Branch_ID
+
+/* Total loans availed and installments paid by the customer ID 10000 */
+SELECT a.Customer_ID, a.Customer_Name, b.Loan_Type,b.Loan_Amount, sum(c.Transaction_Amount) as Repaid
+FROM Customer as a
+JOIN Loan_Information as b
+on a.Customer_ID = b.ID_Customer
+JOIN Loan_Repayment_Info as c
+on b.ID_Customer = c.Transaction_Cust_ID
+WHERE Customer_ID = 10000;
+
+/* Total loans availled by each customer in different branches*/
+SELECT a.Customer_ID, a.Customer_Name,a.Customer_Branch, b.Loan_Type,b.Loan_Amount
+FROM customer as a
+JOIN Loan_Information as b
+on a.Customer_ID = b.ID_Customer
+ORDER by Loan_Type
+
+/* Total number of Education Loans loan given by 0913 branch */
+SELECT a.Branch_ID,a.Branch_Name,b.Customer_ID,b.Customer_Name,c.Loan_Type,c.Loan_Amount
+FROM Branch as a
+JOIN Customer as b
+on a.Branch_ID = b.Customer_Branch
+JOIN Loan_Information as c
+on b.Customer_ID = c.ID_Customer
+WHERE Branch_ID = 913 AND Loan_Type = &quot;Education&quot;
+
+/* Create New Table &quot;Loans availed and total amount repaid by customers&quot;*/
+CREATE TABLE &quot;Loans_Repaid&quot;
+as
+SELECT a.Branch_ID,a.Branch_Name,b.Customer_ID,b.Customer_Name, c.Loan_ID,c.Loan_Type,c.Loan_Amount,d.Transaction_Amount as Total_repaid
+FROM Branch as a
+JOIN Customer as b
+on a.Branch_ID = b.Customer_Branch
+JOIN Loan_Information as c
+on b.Customer_ID = c.ID_Customer
+JOIN Loan_Repayment_Info as d
+on c.ID_Customer = d.Transaction_Cust_ID
+GROUP by Customer_ID
+
+/* Details of loan officers working in 5489 Branch*/
+Select a.*,b.Branch_Name,b.Branch_ID
+FROM Loan_Officer as a
+JOIN Branch as b
+on a.BranchWorking_ID = b.Branch_ID
+where Branch_ID = 5489
+
+
+
+
+</sql><current_tab id="0"/></tab_sql></sqlb_project>
